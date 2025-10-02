@@ -6,11 +6,11 @@ import Footer from './components/Layout/Footer';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Services from './pages/Services';
-import Wallet from './pages/Wallet';
 import Cart from './pages/Cart';
 import Admin from './pages/Admin';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -32,14 +32,7 @@ function AppContent() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/wallet"
-            element={
-              <ProtectedRoute>
-                <Wallet />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route
             path="/admin"
             element={

@@ -46,16 +46,6 @@ export default function Navbar() {
             >
               Dịch vụ tư vấn
             </Link>
-            {user && (
-              <Link
-                to="/wallet"
-                className={`text-sm font-medium transition-colors ${
-                  isActive('/wallet') ? 'text-green-600' : 'text-gray-700 hover:text-green-600'
-                }`}
-              >
-                Ví tiền
-              </Link>
-            )}
             {user?.role === 'admin' && (
               <Link
                 to="/admin"

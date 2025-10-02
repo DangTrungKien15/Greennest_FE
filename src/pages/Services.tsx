@@ -1,7 +1,31 @@
-import { Clock, CheckCircle2 } from 'lucide-react';
-import { mockServices } from '../data/mockData';
+import { useState, useEffect } from 'react';
+import { Clock, CheckCircle2, Loader2 } from 'lucide-react';
+import { serviceService } from '../services';
+import { Service } from '../types';
 
 export default function Services() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadServices = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await serviceService.getServices();
+        setServices(response);
+      } catch (error) {
+        console.error('Failed to load services:', error);
+        setError('Không thể tải dịch vụ. Vui lòng thử lại sau.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadServices();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-16">
@@ -35,7 +59,25 @@ export default function Services() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {mockServices.map(service => (
+          {isLoading ? (
+            <div className="col-span-full flex justify-center items-center py-16">
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-6 h-6 animate-spin text-green-600" />
+                <span className="text-gray-600">Đang tải dịch vụ...</span>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-16">
+              <p className="text-red-600 text-lg mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Thử lại
+              </button>
+            </div>
+          ) : (
+            services.map(service => (
             <div
               key={service.id}
               className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
@@ -85,7 +127,8 @@ export default function Services() {
                 </div>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="mt-12 bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-xl p-8 md:p-12 text-white text-center">

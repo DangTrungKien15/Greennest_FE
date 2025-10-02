@@ -1,33 +1,55 @@
-import { useState } from 'react';
-import { ShoppingCart, Star, Search, Filter } from 'lucide-react';
-import { mockProducts } from '../data/mockData';
+import { useState, useEffect } from 'react';
+import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { productService } from '../services';
+import { Product } from '../types';
 
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'rating'>('default');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { addItem } = useCart();
 
-  const categories = ['all', ...Array.from(new Set(mockProducts.map(p => p.category)))];
+  // Load products from API
+  useEffect(() => {
+    const loadProducts = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await productService.getProducts({
+          category: selectedCategory === 'all' ? undefined : selectedCategory,
+          search: searchQuery || undefined,
+          sortBy: sortBy === 'default' ? undefined : sortBy,
+          sortOrder: sortBy === 'price-high' ? 'desc' : 'asc'
+        });
+        
+        setProducts(response.products);
+        
+        // Extract unique categories
+        const uniqueCategories: string[] = ['all', ...Array.from(new Set(response.products.map(p => p.category as string)))];
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        setError('Không thể tải sản phẩm. Vui lòng thử lại sau.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  let filteredProducts = mockProducts.filter(product => {
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+    loadProducts();
+  }, [selectedCategory, searchQuery, sortBy]);
 
-  if (sortBy === 'price-low') {
-    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
-  } else if (sortBy === 'price-high') {
-    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
-  } else if (sortBy === 'rating') {
-    filteredProducts = [...filteredProducts].sort((a, b) => b.rating - a.rating);
-  }
-
-  const handleAddToCart = (product: typeof mockProducts[0]) => {
-    addItem(product);
+  const handleAddToCart = async (product: Product) => {
+    try {
+      await addItem(product);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      alert('Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.');
+    }
   };
 
   return (
@@ -83,7 +105,25 @@ export default function Products() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map(product => (
+          {isLoading ? (
+            <div className="col-span-full flex justify-center items-center py-16">
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-6 h-6 animate-spin text-green-600" />
+                <span className="text-gray-600">Đang tải sản phẩm...</span>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-16">
+              <p className="text-red-600 text-lg mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Thử lại
+              </button>
+            </div>
+          ) : (
+            products.map(product => (
             <div
               key={product.id}
               className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
@@ -126,10 +166,11 @@ export default function Products() {
                 </div>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
 
-        {filteredProducts.length === 0 && (
+        {!isLoading && !error && products.length === 0 && (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">Không tìm thấy sản phẩm nào</p>
           </div>

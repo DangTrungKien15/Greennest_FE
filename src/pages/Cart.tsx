@@ -1,9 +1,10 @@
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
+import PayOSButton from '../components/Payment/PayOSButton';
 
 export default function Cart() {
-  const { items, removeItem, updateQuantity, total } = useCart();
+  const { items, removeItem, updateQuantity, total, clearCart } = useCart();
 
   if (items.length === 0) {
     return (
@@ -116,9 +117,13 @@ export default function Cart() {
                 </div>
               </div>
 
-              <button className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg hover:shadow-xl mb-3">
-                Thanh toán
-              </button>
+              <PayOSButton 
+                items={items}
+                total={total}
+                onError={(error) => {
+                  alert(`Lỗi thanh toán: ${error}`);
+                }}
+              />
 
               <Link
                 to="/products"

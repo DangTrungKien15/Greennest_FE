@@ -38,8 +38,10 @@ export interface Transaction {
 }
 
 export interface CartItem {
+  id: string;
   product: Product;
   quantity: number;
+  createdAt: string;
 }
 
 export interface Order {
