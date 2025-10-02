@@ -131,12 +131,6 @@ export default function Login() {
               </Link>
             </p>
           </div>
-
-          <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
-              Demo: admin@example.com hoặc user@example.com
-            </p>
-          </div>
         </div>
       </div>
     </div>

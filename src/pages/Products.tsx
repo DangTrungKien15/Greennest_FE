@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { productService } from '../services';
+import { adminService } from '../services';
 import { Product } from '../types';
 
 export default function Products() {
@@ -9,10 +10,39 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'rating'>('default');
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Array<{id?: number, categoryId?: number, name: string}>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { addItem } = useCart();
+
+  // Load categories from API
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        console.log('Loading categories...');
+        const response = await adminService.getCategories();
+        console.log('Categories response:', response);
+        
+        if (response.categories && Array.isArray(response.categories)) {
+          console.log('Setting categories from response.categories:', response.categories);
+          setCategories(response.categories);
+        } else if (Array.isArray(response)) {
+          console.log('Setting categories from direct array:', response);
+          setCategories(response);
+        } else {
+          console.warn('Unexpected categories response format:', response);
+          console.log('Response type:', typeof response);
+          console.log('Response keys:', Object.keys(response || {}));
+          setCategories([]);
+        }
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+        setCategories([]);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Load products from API
   useEffect(() => {
@@ -20,18 +50,58 @@ export default function Products() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await productService.getProducts({
-          category: selectedCategory === 'all' ? undefined : selectedCategory,
-          search: searchQuery || undefined,
-          sortBy: sortBy === 'default' ? undefined : sortBy,
-          sortOrder: sortBy === 'price-high' ? 'desc' : 'asc'
-        });
+        console.log('Loading products for user...');
+        console.log('Selected category:', selectedCategory);
+        console.log('Search query:', searchQuery);
         
-        setProducts(response.products);
+        let response;
         
-        // Extract unique categories
-        const uniqueCategories: string[] = ['all', ...Array.from(new Set(response.products.map(p => p.category as string)))];
-        setCategories(uniqueCategories);
+        // If a specific category is selected (not 'all'), use category-specific API
+        if (selectedCategory !== 'all') {
+          const categoryId = parseInt(selectedCategory);
+          if (!isNaN(categoryId)) {
+            console.log('Using category-specific API for categoryId:', categoryId);
+            response = await productService.getProductsByCategory(categoryId, {
+              page: 1,
+              limit: 50,
+              q: searchQuery || undefined
+            });
+          } else {
+            console.log('Invalid categoryId, falling back to general products API');
+            response = await productService.getProducts({
+              categoryId: undefined,
+              search: searchQuery || undefined,
+              sortBy: sortBy === 'default' ? undefined : sortBy,
+              sortOrder: sortBy === 'price-high' ? 'desc' : 'asc'
+            });
+          }
+        } else {
+          console.log('Using general products API');
+          response = await productService.getProducts({
+            categoryId: undefined,
+            search: searchQuery || undefined,
+            sortBy: sortBy === 'default' ? undefined : sortBy,
+            sortOrder: sortBy === 'price-high' ? 'desc' : 'asc'
+          });
+        }
+        
+        console.log('Products response:', response);
+        
+        // Transform API response to match Product interface
+        const transformedProducts: Product[] = response.products.map((product: any) => ({
+          id: product.productId.toString(),
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          image: product.mainImage || product.image || '',
+          category: product.category?.name || `Category ${product.categoryId}`,
+          stock: product.stock,
+          rating: product.rating || 0
+        }));
+        
+        setProducts(transformedProducts);
+        
+        // Categories are loaded separately from API
       } catch (error) {
         console.error('Failed to load products:', error);
         setError('Không thể tải sản phẩm. Vui lòng thử lại sau.');
@@ -51,6 +121,24 @@ export default function Products() {
       alert('Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.');
     }
   };
+
+  // Error boundary for debugging
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Lỗi tải trang</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            Tải lại trang
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,19 +177,37 @@ export default function Products() {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-8">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full font-medium transition-all ${
-                selectedCategory === category
-                  ? 'bg-green-600 text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-green-50 border border-gray-200'
-              }`}
-            >
-              {category === 'all' ? 'Tất cả' : category}
-            </button>
-          ))}
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-4 py-2 rounded-full font-medium transition-all ${
+              selectedCategory === 'all'
+                ? 'bg-green-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-green-50 border border-gray-200'
+            }`}
+          >
+            Tất cả
+          </button>
+          {categories && categories.length > 0 ? categories.map(category => {
+            console.log('Rendering category:', category);
+            const categoryId = category.id || category.categoryId;
+            const categoryIdStr = categoryId ? categoryId.toString() : '0';
+            
+            return (
+              <button
+                key={categoryId || Math.random()}
+                onClick={() => setSelectedCategory(categoryIdStr)}
+                className={`px-4 py-2 rounded-full font-medium transition-all ${
+                  selectedCategory === categoryIdStr
+                    ? 'bg-green-600 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-green-50 border border-gray-200'
+                }`}
+              >
+                {category.name || 'Unnamed Category'}
+              </button>
+            );
+          }) : (
+            <div className="text-gray-500 text-sm">Đang tải danh mục... ({categories?.length || 0} categories)</div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

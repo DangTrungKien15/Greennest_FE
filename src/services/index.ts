@@ -5,6 +5,7 @@ export { cartService } from './cartService';
 export { orderService } from './orderService';
 export { serviceService } from './serviceService';
 export { adminService } from './adminService';
+export { inventoryService } from './inventoryService';
 
 // Export base API service
 export { default as apiService } from './apiService';

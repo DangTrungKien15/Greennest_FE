@@ -20,29 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem('greennest_token');
-        const savedUser = localStorage.getItem('greennest_user');
-        console.log('AuthContext useEffect: Initializing auth...');
-        console.log('AuthContext useEffect: Retrieved token:', token ? 'Exists' : 'None');
-        console.log('AuthContext useEffect: Retrieved savedUser string:', savedUser);
+        // Clear any existing auth data first
+        console.log('AuthContext useEffect: Clearing existing auth data...');
+        apiService.clearToken();
+        localStorage.removeItem('greennest_user');
+        localStorage.removeItem('greennest_token');
         
-        if (token && savedUser) {
-          // Set token first
-          apiService.setToken(token);
-          
-          try {
-            // Try to verify token with API
-            const userData = await authService.getProfile();
-            console.log('AuthContext useEffect: API verification successful:', userData);
-            setUser(userData);
-          } catch (error) {
-            // If API verification fails, use saved user data
-            console.warn('Token verification failed, using saved user data');
-            const userData = JSON.parse(savedUser);
-            console.log('AuthContext useEffect: Parsed user data from localStorage:', userData);
-            setUser(userData);
-          }
-        }
+        console.log('AuthContext useEffect: Auth data cleared, ready for fresh login');
       } catch (error) {
         // Clear invalid data
         console.error('AuthContext useEffect: Error initializing auth:', error);

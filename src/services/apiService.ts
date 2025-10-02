@@ -8,6 +8,8 @@ class ApiService {
   constructor(baseURL: string) {
     this.baseURL = baseURL;
     this.token = localStorage.getItem('greennest_token');
+    console.log('ApiService initialized with token:', this.token ? 'Present' : 'Missing');
+    console.log('Token value:', this.token);
   }
 
   // Set authentication token
@@ -22,17 +24,30 @@ class ApiService {
     localStorage.removeItem('greennest_token');
   }
 
+  // Refresh token from localStorage
+  refreshToken() {
+    this.token = localStorage.getItem('greennest_token');
+    console.log('Token refreshed from localStorage:', this.token ? 'Present' : 'Missing');
+    return this.token;
+  }
+
+  // Get current token
+  getToken() {
+    return this.token;
+  }
+
   // Generic request method
   async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
+    // Refresh token from localStorage before each request
+    this.refreshToken();
+    
     const url = `${this.baseURL}${endpoint}`;
     
     const config: RequestInit = {
       headers: {
-        'Content-Type': 'application/json',
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
         ...options.headers,
       },
       mode: 'cors',
@@ -40,8 +55,30 @@ class ApiService {
       ...options,
     };
 
+    // Only add Authorization header for non-auth endpoints
+    if (!endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+      config.headers = {
+        ...(this.token && { Authorization: `Bearer ${this.token}` }),
+        ...config.headers,
+      };
+    }
+
+    // Only set Content-Type for JSON requests, not for FormData
+    if (!(options.body instanceof FormData)) {
+      config.headers = {
+        'Content-Type': 'application/json',
+        ...config.headers,
+      };
+    }
+
     try {
       console.log(`Making API request to: ${url}`);
+      console.log('Request config:', {
+        method: config.method || 'GET',
+        headers: config.headers,
+        hasAuth: !!(config.headers as any)?.Authorization
+      });
+      
       const response = await fetch(url, config);
       
       console.log(`Response status: ${response.status}`);

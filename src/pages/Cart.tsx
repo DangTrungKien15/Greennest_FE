@@ -1,10 +1,41 @@
-import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 import PayOSButton from '../components/Payment/PayOSButton';
+import { useState } from 'react';
 
 export default function Cart() {
-  const { items, removeItem, updateQuantity, total, clearCart } = useCart();
+  const { items, removeItem, updateQuantity, total, clearCart, isLoading } = useCart();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleRemoveItem = async (productId: string) => {
+    try {
+      setError(null);
+      await removeItem(productId);
+    } catch (err: any) {
+      setError(err.message || 'Không thể xóa sản phẩm khỏi giỏ hàng');
+    }
+  };
+
+  const handleUpdateQuantity = async (productId: string, quantity: number) => {
+    try {
+      setError(null);
+      await updateQuantity(productId, quantity);
+    } catch (err: any) {
+      setError(err.message || 'Không thể cập nhật số lượng');
+    }
+  };
+
+  const handleClearCart = async () => {
+    if (!confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?')) return;
+    
+    try {
+      setError(null);
+      await clearCart();
+    } catch (err: any) {
+      setError(err.message || 'Không thể xóa giỏ hàng');
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -34,6 +65,21 @@ export default function Cart() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Đang xử lý...</span>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {items.map(item => (
@@ -55,8 +101,9 @@ export default function Cart() {
                         <p className="text-sm text-gray-600">{item.product.category}</p>
                       </div>
                       <button
-                        onClick={() => removeItem(item.product.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
+                        onClick={() => handleRemoveItem(item.product.id)}
+                        disabled={isLoading}
+                        className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -67,15 +114,17 @@ export default function Cart() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <button
-                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                          onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
+                          disabled={isLoading}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors disabled:opacity-50"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
                         <span className="text-lg font-semibold w-8 text-center">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                          onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
+                          disabled={isLoading}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors disabled:opacity-50"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -125,12 +174,21 @@ export default function Cart() {
                 }}
               />
 
-              <Link
-                to="/products"
-                className="block text-center text-green-600 hover:text-green-700 font-medium"
-              >
-                Tiếp tục mua sắm
-              </Link>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={handleClearCart}
+                  disabled={isLoading}
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                >
+                  Xóa giỏ hàng
+                </button>
+                <Link
+                  to="/products"
+                  className="block text-center text-green-600 hover:text-green-700 font-medium"
+                >
+                  Tiếp tục mua sắm
+                </Link>
+              </div>
 
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">

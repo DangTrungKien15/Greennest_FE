@@ -18,6 +18,12 @@ function decodeJWT(token: string) {
 
 export const authService = {
   async login(email: string, password: string) {
+    console.log('AuthService login: Starting login process...');
+    console.log('AuthService login: Email:', email);
+    
+    // Clear any existing token before login
+    apiService.clearToken();
+    
     const response = await apiService.request<{
       userId: string;
       email: string;
@@ -33,13 +39,13 @@ export const authService = {
     });
 
     // Debug: Log API response
-    console.log('Login API response:', response);
-    console.log('User role from API:', response.role);
-    console.log('Token from API:', response.token);
+    console.log('AuthService login: API response received:', response);
+    console.log('AuthService login: User role from API:', response.role);
+    console.log('AuthService login: Token from API:', response.token ? 'Present' : 'Missing');
 
     // Decode JWT token to get user info
     const tokenPayload = decodeJWT(response.token);
-    console.log('JWT Token payload:', tokenPayload);
+    console.log('AuthService login: JWT Token payload:', tokenPayload);
 
     // Use JWT payload if API response is incomplete
     const userData = {
@@ -52,7 +58,7 @@ export const authService = {
       image: response.image || tokenPayload?.image,
     };
 
-    console.log('Final user data:', userData);
+    console.log('AuthService login: Final user data:', userData);
 
     // Transform response to match expected format
     return {

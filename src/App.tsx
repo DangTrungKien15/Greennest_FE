@@ -3,11 +3,16 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Services from './pages/Services';
 import Cart from './pages/Cart';
 import Admin from './pages/Admin';
+import AdminUsers from './pages/AdminUsers';
+import AdminRoles from './pages/AdminRoles';
+import AdminCategories from './pages/AdminCategories';
+import AdminProducts from './pages/AdminProducts';
 import Profile from './pages/Profile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -46,10 +51,52 @@ function AppContent() {
             path="/admin"
             element={
               <ProtectedRoute>
-                <Admin />
+                <ErrorBoundary>
+                  <Admin />
+                </ErrorBoundary>
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute>
+                <ErrorBoundary>
+                  <AdminUsers />
+                </ErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+                 <Route
+                   path="/admin/roles"
+                   element={
+                     <ProtectedRoute>
+                       <ErrorBoundary>
+                         <AdminRoles />
+                       </ErrorBoundary>
+                     </ProtectedRoute>
+                   }
+                 />
+                 <Route
+                   path="/admin/categories"
+                   element={
+                     <ProtectedRoute>
+                       <ErrorBoundary>
+                         <AdminCategories />
+                       </ErrorBoundary>
+                     </ProtectedRoute>
+                   }
+                 />
+                 <Route
+                   path="/admin/products"
+                   element={
+                     <ProtectedRoute>
+                       <ErrorBoundary>
+                         <AdminProducts />
+                       </ErrorBoundary>
+                     </ProtectedRoute>
+                   }
+                 />
         </Routes>
       </main>
       <Footer />
