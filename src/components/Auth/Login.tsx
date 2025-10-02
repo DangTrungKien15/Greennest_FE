@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Leaf, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../Logo';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -54,9 +55,8 @@ export default function Login() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Leaf className="w-16 h-16 text-green-600" />
+              <Logo size="lg" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">GREENNEST</h2>
             <p className="text-gray-600 mt-2">Đăng nhập vào tài khoản của bạn</p>
           </div>
 
