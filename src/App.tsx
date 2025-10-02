@@ -8,6 +8,7 @@ import Products from './pages/Products';
 import Services from './pages/Services';
 import Cart from './pages/Cart';
 import Admin from './pages/Admin';
+import Profile from './pages/Profile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -33,6 +34,14 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/admin"
             element={

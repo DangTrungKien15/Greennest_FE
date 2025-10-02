@@ -49,7 +49,18 @@ class ApiService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error('API Error Response:', errorData);
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        
+        // Handle different error formats from backend
+        let errorMessage = '';
+        if (errorData.errMessage) {
+          errorMessage = errorData.errMessage;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else {
+          errorMessage = `HTTP error! status: ${response.status}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

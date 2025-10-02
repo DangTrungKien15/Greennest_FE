@@ -23,7 +23,7 @@ export default function Admin() {
   // Load admin data
   useEffect(() => {
     const loadAdminData = async () => {
-      if (!user || user.role !== 'admin') return;
+      if (!user || user.role !== 'ADMIN') return;
       
       setIsLoading(true);
       setError(null);
@@ -55,7 +55,9 @@ export default function Admin() {
     loadAdminData();
   }, [user]);
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== 'ADMIN') {
+    console.log('Admin access denied. User:', user);
+    console.log('User role:', user?.role);
     return <Navigate to="/" replace />;
   }
 

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Leaf, Mail, Lock } from 'lucide-react';
+import { Leaf, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
@@ -16,9 +17,34 @@ export default function Login() {
 
     try {
       await login(email, password);
-      navigate('/');
-    } catch (err) {
-      setError('Đăng nhập thất bại. Vui lòng thử lại.');
+      
+      // Debug: Log user data
+      const savedUser = localStorage.getItem('greennest_user');
+      console.log('Saved user data:', savedUser);
+      
+      if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        console.log('Parsed user data:', userData);
+        console.log('User role:', userData.role);
+        
+        if (userData.role === 'ADMIN') {
+          console.log('Redirecting to admin page');
+          navigate('/admin');
+        } else {
+          console.log('Redirecting to home page (user role)');
+          navigate('/');
+        }
+      } else {
+        console.log('No saved user data, redirecting to home');
+        navigate('/');
+      }
+    } catch (err: any) {
+      // Display backend error message if available
+      if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Đăng nhập thất bại. Vui lòng thử lại.');
+      }
     }
   };
 
@@ -61,13 +87,24 @@ export default function Login() {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -97,7 +134,7 @@ export default function Login() {
 
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500">
-              Demo: user@example.com hoặc admin@example.com
+              Demo: admin@example.com hoặc user@example.com
             </p>
           </div>
         </div>

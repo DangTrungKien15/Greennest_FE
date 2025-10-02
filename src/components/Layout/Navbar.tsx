@@ -46,7 +46,7 @@ export default function Navbar() {
             >
               Dịch vụ tư vấn
             </Link>
-            {user?.role === 'admin' && (
+            {user?.role === 'ADMIN' && (
               <Link
                 to="/admin"
                 className={`text-sm font-medium transition-colors ${
@@ -81,7 +81,7 @@ export default function Navbar() {
                   className="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors"
                 >
                   <User className="w-6 h-6" />
-                  <span className="hidden md:block text-sm font-medium">{user.name}</span>
+                  <span className="hidden md:block text-sm font-medium">{user.firstName} {user.lastName}</span>
                 </Link>
                 <button
                   onClick={logout}
