@@ -5,7 +5,7 @@ import {
   Shield, 
   Tag,
   Package,
-  Settings,
+  ShoppingBag,
   Home
 } from 'lucide-react';
 
@@ -44,10 +44,10 @@ export default function AdminNavigation() {
       current: location.pathname === '/admin/products'
     },
     {
-      name: 'Cài đặt',
-      href: '/admin/settings',
-      icon: Settings,
-      current: location.pathname === '/admin/settings'
+      name: 'Quản lý Đơn hàng',
+      href: '/admin/orders',
+      icon: ShoppingBag,
+      current: location.pathname === '/admin/orders'
     }
   ];
 

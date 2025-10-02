@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { AddressProvider } from './context/AddressContext';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -13,16 +14,33 @@ import AdminUsers from './pages/AdminUsers';
 import AdminRoles from './pages/AdminRoles';
 import AdminCategories from './pages/AdminCategories';
 import AdminProducts from './pages/AdminProducts';
+import AdminOrders from './pages/AdminOrders';
 import Profile from './pages/Profile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import PaymentSuccess from './pages/PaymentSuccess';
+import AddressManagement from './pages/AddressManagement';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra đăng nhập...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  
   return <>{children}</>;
 }
 
@@ -39,6 +57,14 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route
+            path="/addresses"
+            element={
+              <ProtectedRoute>
+                <AddressManagement />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={
@@ -97,6 +123,16 @@ function AppContent() {
                      </ProtectedRoute>
                    }
                  />
+                 <Route
+                   path="/admin/orders"
+                   element={
+                     <ProtectedRoute>
+                       <ErrorBoundary>
+                         <AdminOrders />
+                       </ErrorBoundary>
+                     </ProtectedRoute>
+                   }
+                 />
         </Routes>
       </main>
       <Footer />
@@ -109,7 +145,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <AppContent />
+          <AddressProvider>
+            <AppContent />
+          </AddressProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

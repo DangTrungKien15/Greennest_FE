@@ -1,7 +1,11 @@
-import { CheckCircle, ArrowLeft, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { CheckCircle, ArrowLeft, ShoppingBag, Banknote, CreditCard } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 export default function PaymentSuccess() {
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('orderId');
+  const method = searchParams.get('method');
+  const isCOD = method === 'cod';
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
@@ -11,11 +15,40 @@ export default function PaymentSuccess() {
           </div>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Thanh toán thành công!
+            {isCOD ? 'Đặt hàng thành công!' : 'Thanh toán thành công!'}
           </h1>
           
+          <div className="flex items-center justify-center mb-4">
+            {isCOD ? (
+              <div className="flex items-center space-x-2 text-green-600">
+                <Banknote className="w-6 h-6" />
+                <span className="font-semibold">Thanh toán khi nhận hàng (COD)</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 text-blue-600">
+                <CreditCard className="w-6 h-6" />
+                <span className="font-semibold">Thanh toán online</span>
+              </div>
+            )}
+          </div>
+
+          {orderId && (
+            <div className="bg-gray-50 rounded-lg p-3 mb-6">
+              <p className="text-sm text-gray-600">Mã đơn hàng:</p>
+              <p className="font-mono font-semibold text-gray-900">#{orderId}</p>
+            </div>
+          )}
+          
           <p className="text-gray-600 mb-8">
-            Cảm ơn bạn đã mua sắm tại GREENNEST. Đơn hàng của bạn đang được xử lý và sẽ được giao trong 2-3 ngày làm việc.
+            {isCOD ? (
+              <>
+                Cảm ơn bạn đã đặt hàng tại GREENNEST. Đơn hàng của bạn đang được xử lý và sẽ được giao trong 2-3 ngày làm việc.
+                <br />
+                <span className="font-semibold text-green-600">Bạn sẽ thanh toán bằng tiền mặt khi nhận hàng.</span>
+              </>
+            ) : (
+              'Cảm ơn bạn đã mua sắm tại GREENNEST. Đơn hàng của bạn đang được xử lý và sẽ được giao trong 2-3 ngày làm việc.'
+            )}
           </p>
 
           <div className="space-y-4">

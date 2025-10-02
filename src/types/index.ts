@@ -53,3 +53,24 @@ export interface Order {
   status: 'pending' | 'processing' | 'completed' | 'cancelled';
   createdAt: string;
 }
+
+export interface Address {
+  addressId: number;
+  userId: number;
+  address: string;
+  wardCode: string;
+  district: string;
+  province: string;
+  country: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddressResponse {
+  items: Address[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
