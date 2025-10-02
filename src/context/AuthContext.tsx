@@ -20,19 +20,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       setIsLoading(true);
       try {
-        // Clear any existing auth data first
-        console.log('AuthContext useEffect: Clearing existing auth data...');
-        apiService.clearToken();
-        localStorage.removeItem('greennest_user');
-        localStorage.removeItem('greennest_token');
+        // Check if user data exists in localStorage
+        const savedUser = localStorage.getItem('greennest_user');
+        const savedToken = localStorage.getItem('greennest_token');
         
-        console.log('AuthContext useEffect: Auth data cleared, ready for fresh login');
+        if (savedUser && savedToken) {
+          console.log('AuthContext useEffect: Found saved auth data, restoring...');
+          console.log('AuthContext useEffect: savedUser:', savedUser);
+          console.log('AuthContext useEffect: savedToken:', savedToken);
+          try {
+            const userData = JSON.parse(savedUser);
+            console.log('AuthContext useEffect: Parsed userData:', userData);
+            setUser(userData);
+            apiService.setToken(savedToken);
+            console.log('AuthContext useEffect: Auth data restored successfully');
+            console.log('AuthContext useEffect: User set to:', userData);
+          } catch (parseError) {
+            console.error('AuthContext useEffect: Error parsing saved user data:', parseError);
+            // Clear invalid data
+            localStorage.removeItem('greennest_user');
+            localStorage.removeItem('greennest_token');
+            apiService.clearToken();
+          }
+        } else {
+          console.log('AuthContext useEffect: No saved auth data found');
+          console.log('AuthContext useEffect: savedUser:', savedUser);
+          console.log('AuthContext useEffect: savedToken:', savedToken);
+        }
       } catch (error) {
-        // Clear invalid data
         console.error('AuthContext useEffect: Error initializing auth:', error);
-        apiService.clearToken();
+        // Clear invalid data
         localStorage.removeItem('greennest_user');
         localStorage.removeItem('greennest_token');
+        apiService.clearToken();
       } finally {
         setIsLoading(false);
       }

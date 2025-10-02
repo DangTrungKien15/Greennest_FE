@@ -381,12 +381,12 @@ export default function Admin() {
             </div>
 
             {/* Charts and Tables */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+            <div className="flex flex-col space-y-6 mb-12">
               {/* Orders by Status */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                <div className="flex items-center justify-between mb-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-1">Đơn hàng theo trạng thái</h2>
+                    <h2 className="text-lg font-bold text-gray-900 mb-1">Đơn hàng theo trạng thái</h2>
                     <p className="text-gray-500 text-sm">Phân tích trạng thái đơn hàng</p>
                   </div>
                 </div>
@@ -448,13 +448,13 @@ export default function Admin() {
               </div>
 
               {/* Top Products */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                <div className="flex items-center justify-between mb-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-1">Sản phẩm bán chạy</h2>
+                    <h2 className="text-lg font-bold text-gray-900 mb-1">Sản phẩm bán chạy</h2>
                     <p className="text-gray-500 text-sm">Top sản phẩm được yêu thích</p>
                   </div>
-                  <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg">
+                  <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg">
                     Xem tất cả
                   </button>
                 </div>
@@ -503,13 +503,13 @@ export default function Admin() {
               </div>
 
               {/* Recent Orders */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                <div className="flex items-center justify-between mb-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-1">Đơn hàng gần đây</h2>
+                    <h2 className="text-lg font-bold text-gray-900 mb-1">Đơn hàng gần đây</h2>
                     <p className="text-gray-500 text-sm">Các đơn hàng mới nhất</p>
                   </div>
-                  <button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg">
+                  <button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg">
                     Xem tất cả
                   </button>
                 </div>
@@ -550,10 +550,10 @@ export default function Admin() {
               </div>
 
               {/* New Users */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                <div className="flex items-center justify-between mb-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-1">Người dùng mới nhất</h2>
+                    <h2 className="text-lg font-bold text-gray-900 mb-1">Người dùng mới nhất</h2>
                     <p className="text-gray-500 text-sm">Khách hàng đăng ký gần đây</p>
                   </div>
                 </div>
