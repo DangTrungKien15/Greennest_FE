@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Leaf, ShoppingBag, Heart, TrendingUp, Shield, Truck } from 'lucide-react';
+import Logo from '../components/Logo';
 
 export default function Home() {
   const features = [
@@ -41,6 +42,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-black opacity-10"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
+            <div className="flex justify-center mb-6">
+              <Logo size="xl" className="text-white" />
+            </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Không Gian Xanh
               <br />

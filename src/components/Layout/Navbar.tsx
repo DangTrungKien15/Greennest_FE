@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Leaf, ShoppingCart, User, Wallet, LogOut, LayoutDashboard } from 'lucide-react';
+import { ShoppingCart, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import Logo from '../Logo';
 
 export default function Navbar() {
   const location = useLocation();
@@ -14,11 +15,8 @@ export default function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2 group">
-            <Leaf className="w-8 h-8 text-green-600 group-hover:text-green-700 transition-colors" />
-            <span className="text-2xl font-bold text-green-800 group-hover:text-green-900 transition-colors">
-              GREENNEST
-            </span>
+          <Link to="/" className="group">
+            <Logo size="md" className="group-hover:opacity-80 transition-opacity" />
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">

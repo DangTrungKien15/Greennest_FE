@@ -1,0 +1,38 @@
+<svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="50" fill="#16a34a"/>
+  
+  <!-- House outline -->
+  <path
+    d="M20 70 L20 45 L50 20 L80 45 L80 70 Z"
+    stroke="white"
+    strokeWidth="3"
+    fill="none"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+  
+  <!-- Tree on the left -->
+  <g transform="translate(30, 50)">
+    <!-- Tree trunk -->
+    <rect x="2" y="15" width="3" height="8" fill="white" />
+    <!-- Tree leaves -->
+    <circle cx="3.5" cy="12" r="4" fill="white" />
+    <circle cx="1" cy="8" r="3" fill="white" />
+    <circle cx="6" cy="8" r="3" fill="white" />
+  </g>
+  
+  <!-- Chair on the right -->
+  <g transform="translate(60, 50)">
+    <!-- Chair back -->
+    <rect x="0" y="0" width="8" height="2" fill="white" />
+    <!-- Chair seat -->
+    <rect x="1" y="2" width="6" height="2" fill="white" />
+    <!-- Chair legs -->
+    <rect x="1" y="4" width="1" height="6" fill="white" />
+    <rect x="6" y="4" width="1" height="6" fill="white" />
+    <!-- Chair armrests -->
+    <rect x="0" y="1" width="1" height="3" fill="white" />
+    <rect x="7" y="1" width="1" height="3" fill="white" />
+  </g>
+</svg>
