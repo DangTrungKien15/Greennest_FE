@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, DollarSign, Tag, Users, Home, TreePine, Zap } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, DollarSign, Tag, Home, TreePine } from 'lucide-react';
 
 interface Project {
   id: number;
