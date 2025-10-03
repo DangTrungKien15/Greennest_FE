@@ -41,7 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             name: item.product.name,
             description: item.product.description,
             price: item.product.price,
-            image: item.product.mainImage,
+            image: item.product.imageUrl || item.product.mainImage || '',
             category: `Category ${item.product.categoryId}`, // We'll need to get category name
             stock: item.product.stock,
             rating: item.product.rating || 0
@@ -82,7 +82,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           name: item.product.name,
           description: item.product.description,
           price: item.product.price,
-          image: item.product.mainImage,
+          image: item.product.imageUrl || item.product.mainImage || '',
           category: `Category ${item.product.categoryId}`,
           stock: item.product.stock,
           rating: item.product.rating || 0
@@ -121,7 +121,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           name: item.product.name,
           description: item.product.description,
           price: item.product.price,
-          image: item.product.mainImage,
+          image: item.product.imageUrl || item.product.mainImage || '',
           category: `Category ${item.product.categoryId}`,
           stock: item.product.stock,
           rating: item.product.rating || 0
@@ -165,7 +165,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           name: item.product.name,
           description: item.product.description,
           price: item.product.price,
-          image: item.product.mainImage,
+          image: item.product.imageUrl || item.product.mainImage || '',
           category: `Category ${item.product.categoryId}`,
           stock: item.product.stock,
           rating: item.product.rating || 0

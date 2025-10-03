@@ -37,12 +37,28 @@ export default function Navbar() {
               Sản phẩm
             </Link>
             <Link
+              to="/projects"
+              className={`text-sm font-medium transition-colors ${
+                isActive('/projects') ? 'text-green-600' : 'text-gray-700 hover:text-green-600'
+              }`}
+            >
+              Dự án
+            </Link>
+            <Link
               to="/services"
               className={`text-sm font-medium transition-colors ${
                 isActive('/services') ? 'text-green-600' : 'text-gray-700 hover:text-green-600'
               }`}
             >
               Dịch vụ tư vấn
+            </Link>
+            <Link
+              to="/contact"
+              className={`text-sm font-medium transition-colors ${
+                isActive('/contact') ? 'text-green-600' : 'text-gray-700 hover:text-green-600'
+              }`}
+            >
+              Liên hệ
             </Link>
             {user?.role === 'ADMIN' && (
               <Link
