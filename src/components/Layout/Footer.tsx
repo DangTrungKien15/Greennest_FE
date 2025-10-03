@@ -1,4 +1,4 @@
-import { Leaf, Facebook, Twitter, Instagram, Linkedin, ArrowUp } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, ArrowUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                <Leaf className="w-8 h-8 text-green-600" />
+                <span className="text-green-600 font-bold text-xl">🌿</span>
               </div>
               <span className="text-2xl font-bold text-white">GREENNEST</span>
             </div>

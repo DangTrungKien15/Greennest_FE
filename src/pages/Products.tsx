@@ -93,7 +93,7 @@ export default function Products() {
           name: product.name,
           description: product.description,
           price: product.price,
-          image: product.mainImage || product.image || '',
+          image: product.imageUrl || product.mainImage || product.image || '',
           category: product.category?.name || `Category ${product.categoryId}`,
           stock: product.stock,
           rating: product.rating || 0

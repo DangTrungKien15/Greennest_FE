@@ -5,9 +5,13 @@ import { AddressProvider } from './context/AddressContext';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
+import BotPressChat from './components/BotPressChat';
 import Home from './pages/Home';
 import Products from './pages/Products';
+import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
 import Services from './pages/Services';
+import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import Admin from './pages/Admin';
 import AdminUsers from './pages/AdminUsers';
@@ -52,7 +56,10 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -147,6 +154,7 @@ function App() {
         <CartProvider>
           <AddressProvider>
             <AppContent />
+            <BotPressChat />
           </AddressProvider>
         </CartProvider>
       </AuthProvider>

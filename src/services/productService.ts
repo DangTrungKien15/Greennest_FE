@@ -95,7 +95,8 @@ export const productService = {
       name: string;
       description: string;
       price: number;
-      mainImage: string;
+      imageUrl?: string;
+      mainImage?: string;
       images?: string[];
       categoryId: number;
       category?: {
@@ -203,6 +204,7 @@ export const productService = {
     price: number;
     categoryId: number;
     stock: number;
+    imageUrl?: string;
     mainImage?: string;
     images?: string[];
   }) {
@@ -212,7 +214,8 @@ export const productService = {
       name: string;
       description: string;
       price: number;
-      mainImage: string;
+      imageUrl?: string;
+      mainImage?: string;
       images?: string[];
       categoryId: number;
       stock: number;
@@ -234,6 +237,7 @@ export const productService = {
     price?: number;
     categoryId?: number;
     stock?: number;
+    imageUrl?: string;
     mainImage?: string;
     images?: string[];
   }) {
@@ -243,7 +247,8 @@ export const productService = {
       name: string;
       description: string;
       price: number;
-      mainImage: string;
+      imageUrl?: string;
+      mainImage?: string;
       images?: string[];
       categoryId: number;
       stock: number;

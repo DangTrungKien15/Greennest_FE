@@ -49,21 +49,18 @@ export default function AdminProducts() {
     description: '',
     price: '',
     categoryId: '',
-    stock: '',
     discount: '',
-    mainImage: null as File | null,
-    images: [] as File[]
+    image: null as File | null
   });
   const [editForm, setEditForm] = useState({
     name: '',
     description: '',
     price: '',
     categoryId: '',
-    stock: '',
     discount: '',
-    mainImage: null as File | null,
-    images: [] as File[]
+    image: null as File | null
   });
+  const [isUploading, setIsUploading] = useState(false);
 
   // Load products and categories data
   useEffect(() => {
@@ -161,22 +158,22 @@ export default function AdminProducts() {
 
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUploading(true);
     try {
       const productData = {
         name: createForm.name,
         description: createForm.description,
         price: parseFloat(createForm.price),
         categoryId: parseInt(createForm.categoryId),
-        stock: parseInt(createForm.stock),
         discount: createForm.discount ? parseFloat(createForm.discount) : undefined,
-        mainImage: createForm.mainImage || undefined,
-        images: createForm.images.length > 0 ? createForm.images : undefined
+        image: createForm.image || undefined
       };
 
       const response = await adminService.createProduct(productData);
       console.log('Product created:', response);
+      
       setShowCreateModal(false);
-      setCreateForm({ name: '', description: '', price: '', categoryId: '', stock: '', discount: '', mainImage: null, images: [] });
+      setCreateForm({ name: '', description: '', price: '', categoryId: '', discount: '', image: null });
       
       // Reload products
       const productsResponse = await adminService.getProducts({ page: pagination.page, limit: pagination.limit });
@@ -188,6 +185,8 @@ export default function AdminProducts() {
     } catch (error) {
       console.error('Failed to create product:', error);
       setError('Không thể tạo sản phẩm mới');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -195,6 +194,7 @@ export default function AdminProducts() {
     e.preventDefault();
     if (!selectedProduct) return;
     
+    setIsUploading(true);
     try {
       console.log('Edit form data:', editForm);
       
@@ -203,10 +203,8 @@ export default function AdminProducts() {
         description: editForm.description,
         price: parseFloat(editForm.price),
         categoryId: parseInt(editForm.categoryId),
-        stock: parseInt(editForm.stock),
         discount: editForm.discount ? parseFloat(editForm.discount) : undefined,
-        mainImage: editForm.mainImage || undefined,
-        images: editForm.images && editForm.images.length > 0 ? editForm.images : undefined
+        image: editForm.image || undefined
       };
 
       console.log('Sending product data:', productData);
@@ -229,6 +227,8 @@ export default function AdminProducts() {
       const errorMessage = error?.message || 'Không thể cập nhật sản phẩm';
       setError(errorMessage);
       alert(`Lỗi cập nhật sản phẩm: ${errorMessage}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -260,10 +260,8 @@ export default function AdminProducts() {
       description: product.description || '',
       price: (product.price || 0).toString(),
       categoryId: (product.categoryId || 0).toString(),
-      stock: (product.stock || 0).toString(),
       discount: product.discount ? product.discount.toString() : '',
-      mainImage: null,
-      images: []
+      image: null
     });
     setShowEditModal(true);
   };
@@ -271,6 +269,25 @@ export default function AdminProducts() {
   const openDetailModal = (product: any) => {
     setSelectedProduct(product);
     setShowDetailModal(true);
+  };
+
+  // Image file handlers
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setCreateForm(prev => ({ ...prev, image: file || null }));
+  };
+
+  const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setEditForm(prev => ({ ...prev, image: file || null }));
+  };
+
+  const removeImage = () => {
+    setCreateForm(prev => ({ ...prev, image: null }));
+  };
+
+  const removeEditImage = () => {
+    setEditForm(prev => ({ ...prev, image: null }));
   };
 
   // Inventory Management Functions
@@ -539,9 +556,9 @@ export default function AdminProducts() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-4">
                             <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center overflow-hidden">
-                              {product.mainImage ? (
+                              {product.imageUrl || product.mainImage ? (
                                 <img
-                                  src={product.mainImage}
+                                  src={product.imageUrl || product.mainImage}
                                   alt={product.name}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
@@ -553,7 +570,7 @@ export default function AdminProducts() {
                                   }}
                                 />
                               ) : null}
-                              <Package className="w-6 h-6 text-white" style={{ display: product.mainImage ? 'none' : 'flex' }} />
+                              <Package className="w-6 h-6 text-white" style={{ display: (product.imageUrl || product.mainImage) ? 'none' : 'flex' }} />
                             </div>
                             <div>
                               <div className="text-sm font-semibold text-gray-900">
@@ -737,74 +754,31 @@ export default function AdminProducts() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Số lượng tồn kho</label>
-                <input
-                  type="number"
-                  value={createForm.stock}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, stock: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="10"
-                  min="0"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh chính</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh sản phẩm</label>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    setCreateForm(prev => ({ ...prev, mainImage: file || null }));
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  onChange={handleImageChange}
+                  disabled={isUploading}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:opacity-50"
                 />
-                {createForm.mainImage && (
+                {createForm.image && (
                   <div className="mt-2">
                     <img
-                      src={URL.createObjectURL(createForm.mainImage)}
+                      src={URL.createObjectURL(createForm.image)}
                       alt="Preview"
                       className="w-20 h-20 object-cover rounded-lg border"
                     />
-                    <p className="text-sm text-gray-500 mt-1">{createForm.mainImage.name}</p>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh phụ (có thể chọn nhiều)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setCreateForm(prev => ({ ...prev, images: files }));
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-                {createForm.images.length > 0 && (
-                  <div className="mt-2 grid grid-cols-4 gap-2">
-                    {createForm.images.map((file, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-16 object-cover rounded-lg border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCreateForm(prev => ({
-                              ...prev,
-                              images: prev.images.filter((_, i) => i !== index)
-                            }));
-                          }}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                    <div className="mt-1 flex items-center space-x-2">
+                      <span className="text-sm text-green-600">✓ {createForm.image.name}</span>
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="text-sm text-red-600 hover:text-red-800"
+                      >
+                        Xóa
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -902,73 +876,31 @@ export default function AdminProducts() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Số lượng tồn kho</label>
-                <input
-                  type="number"
-                  value={editForm.stock}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, stock: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  min="0"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh chính (thay thế)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh sản phẩm (thay thế)</label>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    setEditForm(prev => ({ ...prev, mainImage: file || null }));
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  onChange={handleEditImageChange}
+                  disabled={isUploading}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:opacity-50"
                 />
-                {editForm.mainImage && (
+                {editForm.image && (
                   <div className="mt-2">
                     <img
-                      src={URL.createObjectURL(editForm.mainImage)}
+                      src={URL.createObjectURL(editForm.image)}
                       alt="Preview"
                       className="w-20 h-20 object-cover rounded-lg border"
                     />
-                    <p className="text-sm text-gray-500 mt-1">{editForm.mainImage.name}</p>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh phụ (thêm mới)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setEditForm(prev => ({ ...prev, images: files }));
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-                {editForm.images.length > 0 && (
-                  <div className="mt-2 grid grid-cols-4 gap-2">
-                    {editForm.images.map((file, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-16 object-cover rounded-lg border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditForm(prev => ({
-                              ...prev,
-                              images: prev.images.filter((_, i) => i !== index)
-                            }));
-                          }}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                    <div className="mt-1 flex items-center space-x-2">
+                      <span className="text-sm text-green-600">✓ {editForm.image.name}</span>
+                      <button
+                        type="button"
+                        onClick={removeEditImage}
+                        className="text-sm text-red-600 hover:text-red-800"
+                      >
+                        Xóa
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1012,9 +944,9 @@ export default function AdminProducts() {
               {/* Product Header */}
               <div className="flex items-start space-x-6 mb-8">
                 <div className="w-32 h-32 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center overflow-hidden">
-                  {selectedProduct.mainImage ? (
+                  {selectedProduct.imageUrl || selectedProduct.mainImage ? (
                     <img
-                      src={selectedProduct.mainImage}
+                      src={selectedProduct.imageUrl || selectedProduct.mainImage}
                       alt={selectedProduct.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -1026,7 +958,7 @@ export default function AdminProducts() {
                       }}
                     />
                   ) : null}
-                  <Package className="w-16 h-16 text-white" style={{ display: selectedProduct.mainImage ? 'none' : 'flex' }} />
+                  <Package className="w-16 h-16 text-white" style={{ display: (selectedProduct.imageUrl || selectedProduct.mainImage) ? 'none' : 'flex' }} />
                 </div>
                 <div className="flex-1">
                   <h4 className="text-3xl font-bold text-gray-900 mb-2">

@@ -17,7 +17,8 @@ export const cartService = {
           name: string;
           description: string;
           price: number;
-          mainImage: string;
+          imageUrl?: string;
+          mainImage?: string;
           images?: string[];
           categoryId: number;
           stock: number;
@@ -76,7 +77,8 @@ export const cartService = {
           name: string;
           description: string;
           price: number;
-          mainImage: string;
+          imageUrl?: string;
+          mainImage?: string;
           images?: string[];
           categoryId: number;
           stock: number;
@@ -108,7 +110,8 @@ export const cartService = {
           name: string;
           description: string;
           price: number;
-          mainImage: string;
+          imageUrl?: string;
+          mainImage?: string;
           images?: string[];
           categoryId: number;
           stock: number;

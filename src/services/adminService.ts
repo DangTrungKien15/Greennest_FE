@@ -681,7 +681,8 @@ export const adminService = {
       name: string;
       description: string;
       price: number;
-      mainImage: string;
+      imageUrl?: string;
+      mainImage?: string;
       images?: string[];
       categoryId: number;
       category?: {
@@ -782,18 +783,16 @@ export const adminService = {
     };
   },
 
-  // Create product
+  // Create product with file upload
   async createProduct(productData: {
     name: string;
     description: string;
     price: number;
     categoryId: number;
-    stock: number;
     discount?: number;
-    mainImage?: File;
-    images?: File[];
+    image?: File;
   }) {
-    console.log('Creating product...');
+    console.log('Creating product with file upload...');
     
     // Create FormData for multipart/form-data
     const formData = new FormData();
@@ -801,22 +800,14 @@ export const adminService = {
     formData.append('description', productData.description);
     formData.append('price', productData.price.toString());
     formData.append('categoryId', productData.categoryId.toString());
-    formData.append('stock', productData.stock.toString());
     
     if (productData.discount !== undefined) {
       formData.append('discount', productData.discount.toString());
     }
     
-    // Add main image if provided
-    if (productData.mainImage) {
-      formData.append('image', productData.mainImage);
-    }
-    
-    // Add additional images if provided
-    if (productData.images && productData.images.length > 0) {
-      productData.images.forEach((image) => {
-        formData.append('image', image);
-      });
+    // Add image file if provided
+    if (productData.image) {
+      formData.append('image', productData.image);
     }
     
     console.log('FormData contents:');
@@ -829,10 +820,9 @@ export const adminService = {
       name: string;
       description: string;
       price: number;
-      mainImage: string;
-      images?: string[];
+      imageUrl: string;
       categoryId: number;
-      stock: number;
+      totalStock: number;
       createdAt: string;
       updatedAt: string;
     }>('/api/products', {
@@ -848,21 +838,19 @@ export const adminService = {
     return response;
   },
 
-  // Update product
+  // Update product with file upload
   async updateProduct(id: number, productData: {
     name?: string;
     description?: string;
     price?: number;
     categoryId?: number;
-    stock?: number;
     discount?: number;
-    mainImage?: File;
-    images?: File[];
+    image?: File;
   }) {
     console.log(`Updating product ${id}...`);
     console.log('Update product data:', productData);
     
-    // Always use FormData for multipart/form-data as required by API
+    // Create FormData for multipart/form-data
     const formData = new FormData();
     
     if (productData.name !== undefined) {
@@ -877,23 +865,13 @@ export const adminService = {
     if (productData.categoryId !== undefined) {
       formData.append('categoryId', productData.categoryId.toString());
     }
-    if (productData.stock !== undefined) {
-      formData.append('stock', productData.stock.toString());
-    }
     if (productData.discount !== undefined) {
       formData.append('discount', productData.discount.toString());
     }
     
-    // Add main image if provided
-    if (productData.mainImage) {
-      formData.append('image', productData.mainImage);
-    }
-    
-    // Add additional images if provided
-    if (productData.images && productData.images.length > 0) {
-      productData.images.forEach((image) => {
-        formData.append('image', image);
-      });
+    // Add image file if provided
+    if (productData.image) {
+      formData.append('image', productData.image);
     }
     
     console.log('Update FormData contents:');
@@ -906,10 +884,9 @@ export const adminService = {
       name: string;
       description: string;
       price: number;
-      mainImage: string;
-      images?: string[];
+      imageUrl: string;
       categoryId: number;
-      stock: number;
+      totalStock: number;
       createdAt: string;
       updatedAt: string;
     }>(`/api/products/${id}`, {
