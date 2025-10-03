@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useAddress } from '../context/AddressContext';
 import { Address } from '../types';
-import { Plus, Edit, Trash2, MapPin, Star, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, MapPin, Star, Loader2, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddressManagement() {
+  const navigate = useNavigate();
   const {
     addresses,
     isLoading,
@@ -120,8 +122,19 @@ export default function AddressManagement() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Quản lý địa chỉ</h1>
-          <p className="text-xl text-green-100">Quản lý địa chỉ giao hàng của bạn</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Quản lý địa chỉ</h1>
+              <p className="text-xl text-green-100">Quản lý địa chỉ giao hàng của bạn</p>
+            </div>
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Quay lại</span>
+            </button>
+          </div>
         </div>
       </div>
 
