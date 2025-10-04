@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatCurrency } from '../utils/currency';
 import { 
   Package, 
   Search, 
@@ -413,10 +414,7 @@ export default function AdminProducts() {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price);
+    return formatCurrency(price);
   };
 
   return (

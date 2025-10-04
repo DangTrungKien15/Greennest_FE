@@ -37,6 +37,14 @@ export default function Navbar() {
               Sản phẩm
             </Link>
             <Link
+              to="/about"
+              className={`text-sm font-medium transition-colors ${
+                isActive('/about') ? 'text-green-600' : 'text-gray-700 hover:text-green-600'
+              }`}
+            >
+              Giới thiệu
+            </Link>
+            <Link
               to="/projects"
               className={`text-sm font-medium transition-colors ${
                 isActive('/projects') ? 'text-green-600' : 'text-gray-700 hover:text-green-600'
