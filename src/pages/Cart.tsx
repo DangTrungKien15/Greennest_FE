@@ -4,6 +4,7 @@ import { useAddress } from '../context/AddressContext';
 import { Link } from 'react-router-dom';
 import PayOSButton from '../components/Payment/PayOSButton';
 import { useState } from 'react';
+import { formatCurrency } from '../utils/currency';
 
 export default function Cart() {
   const { items, removeItem, updateQuantity, total, clearCart, isLoading } = useCart();
@@ -213,10 +214,10 @@ export default function Cart() {
 
                       <div className="text-right">
                         <p className="text-2xl font-bold text-green-600">
-                          {(item.product.price * item.quantity).toLocaleString('vi-VN')}đ
+                          {formatCurrency(item.product.price * item.quantity)}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {item.product.price.toLocaleString('vi-VN')}đ / cây
+                          {formatCurrency(item.product.price)} / cây
                         </p>
                       </div>
                     </div>
@@ -234,23 +235,23 @@ export default function Cart() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Tạm tính</span>
-                  <span className="font-semibold">{total.toLocaleString('vi-VN')}đ</span>
+                  <span className="font-semibold">{formatCurrency(total)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Phí vận chuyển</span>
                   <span className={`font-semibold ${shippingFee === 0 ? 'text-green-600' : 'text-gray-900'}`}>
-                    {shippingFee === 0 ? 'Miễn phí' : `${shippingFee.toLocaleString('vi-VN')}đ`}
+                    {shippingFee === 0 ? 'Miễn phí' : formatCurrency(shippingFee)}
                   </span>
                 </div>
                 {total < FREE_SHIPPING_THRESHOLD && (
                   <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded-lg">
-                    💡 Mua thêm {(FREE_SHIPPING_THRESHOLD - total).toLocaleString('vi-VN')}đ để được miễn phí vận chuyển
+                    💡 Mua thêm {formatCurrency(FREE_SHIPPING_THRESHOLD - total)} để được miễn phí vận chuyển
                   </div>
                 )}
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
                     <span>Tổng cộng</span>
-                    <span className="text-green-600">{finalTotal.toLocaleString('vi-VN')}đ</span>
+                    <span className="text-green-600">{formatCurrency(finalTotal)}</span>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatCurrency } from '../utils/currency';
 import { 
   Search, 
   Eye, 
@@ -274,21 +275,6 @@ export default function AdminOrders() {
       setSelectedOrder(order);
       setShowModal(true);
     }
-  };
-
-  const formatCurrency = (amount: number | string | undefined) => {
-    // Convert to number and handle invalid values
-    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    
-    if (numAmount === null || numAmount === undefined || isNaN(numAmount)) {
-      console.warn('Invalid amount for formatCurrency:', amount);
-      return '0 ₫';
-    }
-    
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(numAmount as number);
   };
 
   const formatDate = (dateString: string) => {

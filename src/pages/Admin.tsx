@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatCurrency } from '../utils/currency';
 import { 
   TrendingUp, 
   Users, 
@@ -259,7 +260,7 @@ export default function Admin() {
                 </div>
                 <p className="text-gray-500 text-sm font-medium mb-2 uppercase tracking-wide">Tổng doanh thu</p>
                 <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {stats.totalRevenue.toLocaleString('vi-VN')}đ
+                  {formatCurrency(stats.totalRevenue)}
                 </p>
                 <p className="text-xs text-gray-400">Tính đến hiện tại</p>
               </div>
@@ -333,7 +334,7 @@ export default function Admin() {
                   <p className="text-gray-500">Theo dõi xu hướng doanh thu hàng ngày</p>
                 </div>
                 <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg">
-                  Tổng: {revenueByDays.reduce((sum, day) => sum + parseInt(day.total), 0).toLocaleString('vi-VN')}đ
+                  Tổng: {formatCurrency(revenueByDays.reduce((sum, day) => sum + parseInt(day.total), 0))}
                 </div>
               </div>
               
@@ -365,13 +366,13 @@ export default function Admin() {
                           >
                             {revenue > 0 && (
                               <span className="text-white text-xs font-medium">
-                                {revenue.toLocaleString('vi-VN')}đ
+                                {formatCurrency(revenue)}
                               </span>
                             )}
                           </div>
                         </div>
                         <div className="w-24 text-right text-sm font-medium text-gray-900">
-                          {revenue.toLocaleString('vi-VN')}đ
+                          {formatCurrency(revenue)}
                         </div>
                       </div>
                     );
@@ -490,10 +491,10 @@ export default function Admin() {
                         </div>
                         <div className="text-right">
                           <p className="text-lg font-bold text-green-600">
-                            {product.revenue.toLocaleString('vi-VN')}đ
+                            {formatCurrency(product.revenue)}
                           </p>
                           <p className="text-sm text-gray-500">
-                            {(product.revenue / product.sold).toLocaleString('vi-VN')}đ/sp
+                            {formatCurrency(product.revenue / product.sold)}/sp
                           </p>
                         </div>
                       </div>
@@ -530,7 +531,7 @@ export default function Admin() {
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <p className="font-bold text-green-600">{order.amount.toLocaleString('vi-VN')}đ</p>
+                          <p className="font-bold text-green-600">{formatCurrency(order.amount)}</p>
                           <button className="text-gray-400 hover:text-gray-600">
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
@@ -605,7 +606,7 @@ export default function Admin() {
                   <div className="text-right">
                     <p className="text-green-100 text-sm font-medium mb-1">Doanh thu trung bình/đơn</p>
                     <p className="text-3xl font-bold">
-                      {stats.averageOrderValue.toLocaleString('vi-VN')}đ
+                      {formatCurrency(stats.averageOrderValue)}
                     </p>
                   </div>
                 </div>

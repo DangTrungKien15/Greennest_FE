@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
+import { ShoppingCart, Star, Search, Loader2, X, Plus, Minus, Heart, Share2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { productService } from '../services';
 import { adminService } from '../services';
 import { Product } from '../types';
+import { formatCurrency } from '../utils/currency';
 
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -13,6 +14,9 @@ export default function Products() {
   const [categories, setCategories] = useState<Array<{id?: number, categoryId?: number, name: string}>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
 
   // Load categories from API
@@ -119,6 +123,32 @@ export default function Products() {
     } catch (error) {
       console.error('Failed to add to cart:', error);
       alert('Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.');
+    }
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+    setQuantity(1);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedProduct(null);
+    setQuantity(1);
+  };
+
+  const handleAddToCartFromModal = async () => {
+    if (selectedProduct) {
+      try {
+        for (let i = 0; i < quantity; i++) {
+          await addItem(selectedProduct);
+        }
+        handleCloseModal();
+      } catch (error) {
+        console.error('Failed to add to cart:', error);
+        alert('Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.');
+      }
     }
   };
 
@@ -232,7 +262,8 @@ export default function Products() {
             products.map(product => (
             <div
               key={product.id}
-              className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+              onClick={() => handleProductClick(product)}
+              className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer"
             >
               <div className="relative overflow-hidden aspect-square">
                 <img
@@ -258,7 +289,7 @@ export default function Products() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-2xl font-bold text-green-600">
-                      {product.price.toLocaleString('vi-VN')}đ
+                      {formatCurrency(product.price)}
                     </p>
                     <p className="text-xs text-gray-500">Còn {product.stock} sản phẩm</p>
                   </div>
@@ -282,6 +313,120 @@ export default function Products() {
           </div>
         )}
       </div>
+
+      {/* Product Detail Modal */}
+      {showModal && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex flex-col lg:flex-row">
+              {/* Left side - Image */}
+              <div className="lg:w-1/2 p-6">
+                <div className="relative">
+                  <button
+                    onClick={handleCloseModal}
+                    className="absolute top-0 right-0 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <X className="w-6 h-6 text-gray-600" />
+                  </button>
+                  
+                  <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="flex space-x-3 mt-4">
+                    <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                      <Heart className="w-5 h-5" />
+                      <span>Yêu thích</span>
+                    </button>
+                    <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                      <Share2 className="w-5 h-5" />
+                      <span>Chia sẻ</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side - Product Info */}
+              <div className="lg:w-1/2 p-6">
+                <div className="h-full flex flex-col">
+                  {/* Category */}
+                  <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full w-fit mb-4">
+                    {selectedProduct.category}
+                  </span>
+
+                  {/* Product Name */}
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                    {selectedProduct.name}
+                  </h1>
+
+                  {/* Rating */}
+                  <div className="flex items-center space-x-2 mb-4">
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">{selectedProduct.rating}</span>
+                    </div>
+                    <span className="text-gray-500">(0 đánh giá)</span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="mb-6">
+                    <p className="text-4xl font-bold text-green-600 mb-2">
+                      {formatCurrency(selectedProduct.price)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Còn {selectedProduct.stock} sản phẩm
+                    </p>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Mô tả sản phẩm</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {selectedProduct.description}
+                    </p>
+                  </div>
+
+                  {/* Quantity Selector */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Số lượng</h3>
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
+                      >
+                        <Minus className="w-5 h-5" />
+                      </button>
+                      <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}
+                        className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Add to Cart Button */}
+                  <div className="mt-auto">
+                    <button
+                      onClick={handleAddToCartFromModal}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                    >
+                      <ShoppingCart className="w-6 h-6" />
+                      <span>Thêm vào giỏ hàng ({quantity})</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

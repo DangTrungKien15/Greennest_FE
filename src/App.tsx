@@ -7,6 +7,7 @@ import Footer from './components/Layout/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
 import BotPressChat from './components/BotPressChat';
 import Home from './pages/Home';
+import About from './pages/About';
 import Products from './pages/Products';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
@@ -55,6 +56,7 @@ function AppContent() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/products" element={<Products />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
