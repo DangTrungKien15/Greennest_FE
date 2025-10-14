@@ -22,7 +22,7 @@ export default function Projects() {
       title: "Căn hộ hiện đại Landmark 81",
       location: "Quận 1, TP.HCM",
       date: "Tháng 3, 2024",
-      priceRange: "500-800 triệu",
+      priceRange: "15-20 triệu",
       style: "Hiện đại",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&h=400&fit=crop&crop=center",
       area: "85m²"
