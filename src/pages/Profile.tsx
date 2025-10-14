@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { useAddress } from '../context/AddressContext';
-import { User, Mail, Shield, MapPin, Plus, Edit, Trash2, Star } from 'lucide-react';
+import { User, Mail, Shield, MapPin, Plus, Edit, Trash2, Star, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Profile() {
@@ -206,6 +206,19 @@ export default function Profile() {
                       <div>
                         <p className="font-medium text-gray-900">Thêm địa chỉ</p>
                         <p className="text-sm text-gray-600">Thêm địa chỉ mới</p>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      to="/orders"
+                      className="flex items-center space-x-3 p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Package className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Đơn hàng</p>
+                        <p className="text-sm text-gray-600">Xem đơn hàng đã đặt</p>
                       </div>
                     </Link>
                     

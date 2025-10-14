@@ -138,5 +138,64 @@ export const orderService = {
     
     console.log('Get order API response:', response);
     return response;
+  },
+
+  // Lấy danh sách orders của user cụ thể
+  async getUserOrders(userId: number, params: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  } = {}) {
+    console.log(`Getting orders for user ${userId} with params:`, params);
+    
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append('page', params.page.toString());
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.status) queryParams.append('status', params.status);
+    
+    const endpoint = `/api/orders/user/${userId}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    
+    const response = await apiService.request<{
+      items: Array<{
+        orderId: number;
+        orderCode: string;
+        userId: number;
+        addressId: number;
+        totalAmount: number | string;
+        totalPrice?: number | string;
+        grandTotal?: number | string;
+        status: string;
+        notes?: string;
+        createdAt: string;
+        updatedAt: string;
+        orderItems?: Array<{
+          orderItemId: number;
+          productId: number;
+          quantity: number;
+          price: number;
+          product?: {
+            productId: number;
+            name: string;
+            image?: string;
+            imageUrl?: string;
+          };
+        }>;
+        address?: {
+          addressId: number;
+          address: string;
+          wardCode: string;
+          district: string;
+          province: string;
+          country: string;
+        };
+      }>;
+      total: number;
+      page: number;
+      limit: number;
+      pages: number;
+    }>(endpoint);
+    
+    console.log('Get user orders API response:', response);
+    return response;
   }
 };

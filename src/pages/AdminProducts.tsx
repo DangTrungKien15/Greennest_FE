@@ -643,28 +643,101 @@ export default function AdminProducts() {
 
               {/* Pagination */}
               {pagination.totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
-                      Hiển thị {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} trong tổng số {pagination.total} sản phẩm
+                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                  <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                    {/* Pagination Info */}
+                    <div className="flex items-center space-x-4">
+                      <div className="text-sm text-gray-500">
+                        Hiển thị {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} trong tổng số {pagination.total} sản phẩm
+                      </div>
+                      
+                      {/* Items per page selector */}
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">Hiển thị:</span>
+                        <select
+                          value={pagination.limit}
+                          onChange={(e) => setPagination(prev => ({ ...prev, limit: parseInt(e.target.value), page: 1 }))}
+                          className="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                        </select>
+                        <span className="text-sm text-gray-500">sản phẩm/trang</span>
+                      </div>
                     </div>
-                    <div className="flex space-x-2">
+
+                    {/* Pagination Controls */}
+                    <div className="flex items-center space-x-2">
+                      {/* First Page */}
+                      <button
+                        onClick={() => setPagination(prev => ({ ...prev, page: 1 }))}
+                        disabled={pagination.page === 1}
+                        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Trang đầu"
+                      >
+                        ««
+                      </button>
+                      
+                      {/* Previous Page */}
                       <button
                         onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                         disabled={pagination.page === 1}
                         className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Trang trước"
                       >
-                        Trước
+                        «
                       </button>
-                      <span className="px-3 py-2 text-sm font-medium text-gray-700 bg-orange-50 border border-orange-200 rounded-lg">
-                        {pagination.page} / {pagination.totalPages}
-                      </span>
+
+                      {/* Page Numbers */}
+                      <div className="flex space-x-1">
+                        {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                          let pageNum;
+                          if (pagination.totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (pagination.page <= 3) {
+                            pageNum = i + 1;
+                          } else if (pagination.page >= pagination.totalPages - 2) {
+                            pageNum = pagination.totalPages - 4 + i;
+                          } else {
+                            pageNum = pagination.page - 2 + i;
+                          }
+                          
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                pagination.page === pageNum
+                                  ? 'bg-green-600 text-white'
+                                  : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Next Page */}
                       <button
                         onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                         disabled={pagination.page === pagination.totalPages}
                         className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Trang sau"
                       >
-                        Sau
+                        »
+                      </button>
+                      
+                      {/* Last Page */}
+                      <button
+                        onClick={() => setPagination(prev => ({ ...prev, page: pagination.totalPages }))}
+                        disabled={pagination.page === pagination.totalPages}
+                        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Trang cuối"
+                      >
+                        »»
                       </button>
                     </div>
                   </div>
