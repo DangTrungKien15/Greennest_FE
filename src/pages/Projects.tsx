@@ -32,17 +32,17 @@ export default function Projects() {
       title: "Villa sinh thái",
       location: "Quận 2, TP.HCM",
       date: "Tháng 2, 2024",
-      priceRange: "1-2 tỷ",
+      priceRange: "20-50 triệu",
       style: "Sinh thái",
       image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=400&fit=crop&crop=center",
-      area: "200m²"
+      area: "100m²"
     },
     {
       id: 3,
       title: "Nhà phố tối giản Bình Thạnh",
       location: "Quận Bình Thạnh, TP.HCM",
       date: "Tháng 1, 2024",
-      priceRange: "800 triệu - 1 tỷ",
+      priceRange: "20-50 triệu",
       style: "Tối giản",
       image: "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=500&h=400&fit=crop&crop=center",
       area: "120m²"
@@ -52,17 +52,17 @@ export default function Projects() {
       title: "Biệt thự cao cấp Thủ Đức",
       location: "Quận Thủ Đức, TP.HCM",
       date: "Tháng 12, 2023",
-      priceRange: "2-3 tỷ",
+      priceRange: "20-50 triệu",
       style: "Hiện đại",
       image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&h=400&fit=crop&crop=center",
-      area: "250m²"
+      area: "150m²"
     },
     {
       id: 5,
       title: "Căn hộ sinh thái Quận 7",
       location: "Quận 7, TP.HCM",
       date: "Tháng 11, 2023",
-      priceRange: "600-900 triệu",
+      priceRange: "20-50 triệu",
       style: "Sinh thái",
       image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&h=400&fit=crop&crop=center",
       area: "95m²"
@@ -72,7 +72,7 @@ export default function Projects() {
       title: "Nhà vườn tối giản Củ Chi",
       location: "Huyện Củ Chi, TP.HCM",
       date: "Tháng 10, 2023",
-      priceRange: "400-600 triệu",
+      priceRange: "20-50 triệu",
       style: "Tối giản",
       image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&h=400&fit=crop&crop=center",
       area: "150m²"
