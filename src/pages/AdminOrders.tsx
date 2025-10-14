@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { formatCurrency } from '../utils/currency';
+import AdminNavigation from '../components/Layout/AdminNavigation';
 import { 
   Search, 
   Eye, 
@@ -95,14 +96,16 @@ export default function AdminOrders() {
       setTotalPages(response.pages);
       setTotal(response.total);
       
-      // Calculate total revenue from current page orders
-      const currentPageRevenue = response.items.reduce((sum, order) => {
-        // Use grandTotal first, then totalAmount, then totalPrice
-        let amount = order.grandTotal || order.totalAmount || order.totalPrice || 0;
-        const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-        return sum + (isNaN(numAmount) ? 0 : numAmount);
-      }, 0);
-      setTotalRevenue(currentPageRevenue);
+      // Calculate total revenue from COMPLETED orders only
+      const completedOrdersRevenue = response.items
+        .filter(order => order.status === 'COMPLETED')
+        .reduce((sum, order) => {
+          // Use grandTotal first, then totalAmount, then totalPrice
+          let amount = order.grandTotal || order.totalAmount || order.totalPrice || 0;
+          const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+          return sum + (isNaN(numAmount) ? 0 : numAmount);
+        }, 0);
+      setTotalRevenue(completedOrdersRevenue);
     } catch (err: any) {
       console.error('Error loading orders:', err);
       
@@ -189,15 +192,43 @@ export default function AdminOrders() {
 
   const loadRevenueStats = async () => {
     try {
-      console.log('Loading revenue stats...');
-      const stats = await orderService.getRevenueStats();
-      setRevenueStats(stats);
+      console.log('Loading revenue stats for COMPLETED orders only...');
+      
+      // Get all completed orders to calculate accurate revenue
+      const completedOrdersResponse = await orderService.getOrders({
+        status: 'COMPLETED',
+        page: 1,
+        limit: 1000 // Get all completed orders
+      });
+      
+      // Calculate revenue from completed orders only
+      const completedRevenue = completedOrdersResponse.items.reduce((sum, order) => {
+        let amount = order.grandTotal || order.totalAmount || order.totalPrice || 0;
+        const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+        return sum + (isNaN(numAmount) ? 0 : numAmount);
+      }, 0);
+      
+      const completedOrdersCount = completedOrdersResponse.items.length;
+      const averageOrderValue = completedOrdersCount > 0 ? completedRevenue / completedOrdersCount : 0;
+      
+      setRevenueStats({
+        totalRevenue: completedRevenue,
+        totalOrders: completedOrdersCount,
+        averageOrderValue: averageOrderValue
+      });
+      
+      console.log('Revenue stats calculated:', {
+        totalRevenue: completedRevenue,
+        totalOrders: completedOrdersCount,
+        averageOrderValue: averageOrderValue
+      });
+      
     } catch (err: any) {
       console.error('Error loading revenue stats:', err);
-      // Fallback to mock stats
+      // Fallback to mock stats for completed orders only
       setRevenueStats({
-        totalRevenue: 450000,
-        totalOrders: 2,
+        totalRevenue: 450000, // Only completed orders revenue
+        totalOrders: 2, // Only completed orders count
         averageOrderValue: 225000
       });
     }
@@ -239,6 +270,11 @@ export default function AdminOrders() {
       
       // Show success message
       alert(`✅ Đã cập nhật trạng thái đơn hàng thành công!\nTrạng thái mới: ${getStatusLabel(newStatus)}`);
+      
+      // If status changed to/from COMPLETED, reload revenue stats
+      if (newStatus === 'COMPLETED') {
+        loadRevenueStats();
+      }
     } catch (err: any) {
       console.error('Error updating order status:', err);
       
@@ -289,10 +325,15 @@ export default function AdminOrders() {
 
   if (isLoading && orders.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-gray-600">Đang tải danh sách đơn hàng...</p>
+      <div className="min-h-screen bg-gray-50">
+        {/* Admin Navigation */}
+        <AdminNavigation />
+        
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+            <p className="text-gray-600">Đang tải danh sách đơn hàng...</p>
+          </div>
         </div>
       </div>
     );
@@ -300,6 +341,9 @@ export default function AdminOrders() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Admin Navigation */}
+      <AdminNavigation />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -355,13 +399,13 @@ export default function AdminOrders() {
                 <DollarSign className="w-6 h-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Tổng doanh thu</p>
+                <p className="text-sm font-medium text-gray-600">Tổng doanh thu (đã hoàn thành)</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {revenueStats ? formatCurrency(revenueStats.totalRevenue) : formatCurrency(totalRevenue)}
                 </p>
                 {revenueStats && (
                   <p className="text-xs text-gray-500 mt-1">
-                    TB: {formatCurrency(revenueStats.averageOrderValue)}/đơn
+                    TB: {formatCurrency(revenueStats.averageOrderValue)}/đơn hoàn thành
                   </p>
                 )}
               </div>

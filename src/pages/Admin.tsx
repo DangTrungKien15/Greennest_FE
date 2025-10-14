@@ -13,13 +13,14 @@ import {
   ArrowDownRight,
   Activity
 } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { adminService } from '../services';
+import { adminService, orderService } from '../services';
 import AdminNavigation from '../components/Layout/AdminNavigation';
 
 export default function Admin() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year'>('month');
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -53,21 +54,84 @@ export default function Admin() {
         const overviewData = await adminService.getDashboardOverview();
         console.log('Dashboard overview:', overviewData);
         
-        // Fetch revenue by days (this API also exists)
-        const revenueData = await adminService.getRevenueByDays();
-        console.log('Revenue by days:', revenueData);
-        setRevenueByDays(revenueData);
+        // Compute revenue by days (last 7 days) from COMPLETED orders on FE
+        // 1) Try to build from completed orders (preferred)
+        let computedRevenueByDays: Array<{ date: string; total: string }>|null = null;
+        try {
+          const completedFor7Days = await orderService.getOrders({ status: 'COMPLETED', page: 1, limit: 1000 });
+          const now = new Date();
+          const days: string[] = [];
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(now.getDate() - i);
+            // Normalize to yyyy-mm-dd for grouping
+            const key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
+            days.push(key);
+          }
+
+          const totalsMap = new Map<string, number>();
+          days.forEach(d => totalsMap.set(d, 0));
+
+          completedFor7Days.items.forEach((order: any) => {
+            const created = order.createdAt || order.updatedAt;
+            if (!created) return;
+            const dt = new Date(created);
+            const start = new Date(now);
+            start.setDate(now.getDate() - 6);
+            start.setHours(0,0,0,0);
+            const end = new Date(now);
+            end.setHours(23,59,59,999);
+            if (dt >= start && dt <= end) {
+              const key = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).toISOString();
+              const amountRaw = order.grandTotal || order.totalAmount || order.totalPrice || 0;
+              const amount = typeof amountRaw === 'string' ? parseFloat(amountRaw) : amountRaw;
+              totalsMap.set(key, (totalsMap.get(key) || 0) + (isNaN(amount) ? 0 : amount));
+            }
+          });
+
+          computedRevenueByDays = days.map(d => ({ date: d, total: String(totalsMap.get(d) || 0) }));
+          setRevenueByDays(computedRevenueByDays);
+          console.log('Revenue by days (computed FE):', computedRevenueByDays);
+        } catch (e) {
+          console.warn('Failed to compute 7-day revenue from orders. Falling back to API if available.', e);
+        }
+
+        // 2) Fallback: try backend API if FE computation failed
+        if (!computedRevenueByDays) {
+          try {
+            const revenueData = await adminService.getRevenueByDays();
+            console.log('Revenue by days (API):', revenueData);
+            setRevenueByDays(revenueData);
+          } catch (e) {
+            console.warn('No revenue by days data available. Using empty dataset.', e);
+            setRevenueByDays([]);
+          }
+        }
         
-        // Update stats with overview data
+        // Calculate revenue from COMPLETED orders only for dashboard total revenue
+        let completedRevenue = 0;
+        try {
+          const completedOrders = await orderService.getOrders({ status: 'COMPLETED', page: 1, limit: 1000 });
+          completedRevenue = completedOrders.items.reduce((sum: number, order: any) => {
+            const amount = order.grandTotal || order.totalAmount || order.totalPrice || 0;
+            const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+            return sum + (isNaN(num) ? 0 : num);
+          }, 0);
+        } catch (e) {
+          console.warn('Failed to load completed orders for revenue. Falling back to overview revenue.', e);
+          completedRevenue = overviewData.revenue || 0;
+        }
+
+        // Update stats with computed revenue
         setStats({
-          totalRevenue: overviewData.revenue,
+          totalRevenue: completedRevenue,
           totalOrders: overviewData.orderCount,
           totalCustomers: overviewData.userCount,
           totalProducts: overviewData.productCount,
           revenueGrowth: 0, // Not provided by API
           ordersGrowth: 0,  // Not provided by API
           conversionRate: 0, // Not provided by API
-          averageOrderValue: overviewData.orderCount > 0 ? overviewData.revenue / overviewData.orderCount : 0
+          averageOrderValue: overviewData.orderCount > 0 ? completedRevenue / overviewData.orderCount : 0
         });
         
         // Set orders by status
@@ -103,13 +167,25 @@ export default function Admin() {
           setNewUsers([]);
         }
         
-        // Try to fetch recent orders (this API might not exist yet)
+        // Build recent orders on FE from orders API (sorted by newest)
         try {
-          const ordersData = await adminService.getAdminOrders({ limit: 10 });
-          console.log('Recent orders:', ordersData);
-          setRecentOrders(ordersData.orders || []);
+          const ordersResp = await orderService.getOrders({ page: 1, limit: 1000 });
+          const transformedRecent = (ordersResp.items || [])
+            .sort((a: any, b: any) => new Date(b.createdAt || b.updatedAt).getTime() - new Date(a.createdAt || a.updatedAt).getTime())
+            .slice(0, 10)
+            .map((o: any) => ({
+              id: o.orderCode || `#${o.orderId}`,
+              status: (o.status || '').toLowerCase(),
+              amount: typeof (o.grandTotal ?? o.totalAmount ?? o.totalPrice) === 'string'
+                ? parseFloat(o.grandTotal ?? o.totalAmount ?? o.totalPrice)
+                : (o.grandTotal ?? o.totalAmount ?? o.totalPrice ?? 0),
+              customer: o.user?.fullName || o.user?.email || 'N/A',
+              date: o.createdAt || o.updatedAt || new Date().toISOString()
+            }));
+          console.log('Recent orders (computed FE):', transformedRecent);
+          setRecentOrders(transformedRecent);
         } catch (ordersError) {
-          console.warn('Recent orders API failed:', ordersError);
+          console.warn('Recent orders build failed:', ordersError);
           setRecentOrders([]);
         }
         
@@ -455,7 +531,10 @@ export default function Admin() {
                     <h2 className="text-lg font-bold text-gray-900 mb-1">Sản phẩm bán chạy</h2>
                     <p className="text-gray-500 text-sm">Top sản phẩm được yêu thích</p>
                   </div>
-                  <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg">
+                  <button 
+                    onClick={() => navigate('/admin/products')}
+                    className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg"
+                  >
                     Xem tất cả
                   </button>
                 </div>
@@ -510,7 +589,10 @@ export default function Admin() {
                     <h2 className="text-lg font-bold text-gray-900 mb-1">Đơn hàng gần đây</h2>
                     <p className="text-gray-500 text-sm">Các đơn hàng mới nhất</p>
                   </div>
-                  <button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg">
+                  <button 
+                    onClick={() => navigate('/admin/orders')}
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg"
+                  >
                     Xem tất cả
                   </button>
                 </div>

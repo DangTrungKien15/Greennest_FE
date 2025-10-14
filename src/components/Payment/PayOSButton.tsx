@@ -50,7 +50,10 @@ export default function PayOSButton({ items, total, selectedAddress, onError }: 
       if (paymentMethod === 'payos') {
         // Bước 2: Tạo PayOS payment link
         console.log('Creating PayOS payment link...');
-        const paymentResponse = await paymentService.createPayOSLink(orderResponse.orderId);
+        const paymentResponse = await paymentService.createPayOSLink(
+          orderResponse.orderId, 
+          orderResponse.orderCode
+        );
 
         console.log('Payment link created:', paymentResponse);
         

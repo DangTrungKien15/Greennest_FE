@@ -24,7 +24,9 @@ import Profile from './pages/Profile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 import AddressManagement from './pages/AddressManagement';
+import UserOrders from './pages/UserOrders';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -63,17 +65,26 @@ function AppContent() {
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route
-            path="/addresses"
-            element={
-              <ProtectedRoute>
-                <AddressManagement />
-              </ProtectedRoute>
-            }
-          />
+                 <Route path="/login" element={<Login />} />
+                 <Route path="/register" element={<Register />} />
+                 <Route path="/payment-success" element={<PaymentSuccess />} />
+                 <Route path="/payment-cancel" element={<PaymentCancel />} />
+                 <Route
+                   path="/addresses"
+                   element={
+                     <ProtectedRoute>
+                       <AddressManagement />
+                     </ProtectedRoute>
+                   }
+                 />
+                 <Route
+                   path="/orders"
+                   element={
+                     <ProtectedRoute>
+                       <UserOrders />
+                     </ProtectedRoute>
+                   }
+                 />
           <Route
             path="/profile"
             element={
