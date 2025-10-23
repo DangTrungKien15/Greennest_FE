@@ -1181,12 +1181,12 @@ export default function AdminProducts() {
                 <h4 className="font-semibold text-gray-900 mb-2">{selectedProduct.name}</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-500">SKU:</span>
+                    <span className="text-gray-500">Mã sản phẩm:</span>
                     <span className="ml-2 font-medium">{selectedProduct.productId}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Tồn kho hiện tại:</span>
-                    <span className="ml-2 font-medium text-blue-600">{selectedProduct.stock || 0}</span>
+                    <span className="text-gray-500">Số lượng tồn kho hiện tại:</span>
+                    <span className="ml-2 font-medium text-blue-600">{selectedProduct.stock}</span>
                   </div>
                 </div>
               </div>
@@ -1201,15 +1201,15 @@ export default function AdminProducts() {
                       <span className="ml-2 font-medium">{inventoryData.stock}</span>
                     </div>
                     <div>
-                      <span className="text-green-600">SKU:</span>
+                      <span className="text-green-600">Mã lô hàng:</span>
                       <span className="ml-2 font-medium">{inventoryData.sku}</span>
                     </div>
                     <div>
-                      <span className="text-green-600">Inventory ID:</span>
+                      <span className="text-green-600">Mã tồn kho:</span>
                       <span className="ml-2 font-medium">{inventoryData.inventoryId}</span>
                     </div>
                     <div>
-                      <span className="text-green-600">Product ID:</span>
+                      <span className="text-green-600">Mã sản phẩm:</span>
                       <span className="ml-2 font-medium">{inventoryData.productId}</span>
                     </div>
                   </div>
