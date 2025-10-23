@@ -1186,7 +1186,9 @@ export default function AdminProducts() {
                   </div>
                   <div>
                     <span className="text-gray-500">Số lượng tồn kho hiện tại:</span>
-                    <span className="ml-2 font-medium text-blue-600">{selectedProduct.stock}</span>
+                    {/* <span className="ml-2 font-medium text-blue-600">{selectedProduct.stock}</span> */}
+                    <span className="ml-2 font-medium text-blue-600">{inventoryData.stock}</span>
+
                   </div>
                 </div>
               </div>
