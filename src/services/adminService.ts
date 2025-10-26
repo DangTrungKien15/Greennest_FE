@@ -623,6 +623,7 @@ export const adminService = {
     // Handle different possible response formats
     if (Array.isArray(response)) {
       console.log('Response is direct array, wrapping in expected format');
+      console.warn('⚠️ API returned array without pagination info. Total count may be incorrect.');
       return {
         products: response,
         pagination: {
@@ -635,27 +636,66 @@ export const adminService = {
     } else if (response && typeof response === 'object') {
       if (response.products && Array.isArray(response.products)) {
         console.log('Response has products array');
-        return response;
+        // Check if pagination info exists separately in response
+        if (response.pagination) {
+          return response;
+        } else if (response.total !== undefined) {
+          // API response has total/page/pages at root level
+          console.log('✅ Found pagination info at root level');
+          return {
+            products: response.products,
+            pagination: {
+              page: response.page || params?.page || 1,
+              limit: response.Limit || response.limit || params?.limit || 20,
+              total: response.total,
+              totalPages: response.pages || Math.ceil(response.total / (response.Limit || response.limit || params?.limit || 20))
+            }
+          };
+        } else {
+          console.warn('⚠️ API returned products array without pagination info. Total count may be incorrect.');
+          return response;
+        }
       } else if (response.data && Array.isArray(response.data)) {
         console.log('Response has data array, mapping to products');
-        return {
-          products: response.data,
-          pagination: response.pagination || {
-            page: params?.page || 1,
-            limit: params?.limit || 20,
-            total: response.data.length,
-            totalPages: Math.ceil(response.data.length / (params?.limit || 20))
-          }
-        };
+        // Check if pagination info exists at root level
+        if (response.pagination) {
+          return {
+            products: response.data,
+            pagination: response.pagination
+          };
+        } else if (response.total !== undefined) {
+          console.log('✅ Found pagination info at root level');
+          return {
+            products: response.data,
+            pagination: {
+              page: response.page || params?.page || 1,
+              limit: response.Limit || response.limit || params?.limit || 20,
+              total: response.total,
+              totalPages: response.pages || Math.ceil(response.total / (response.Limit || response.limit || params?.limit || 20))
+            }
+          };
+        } else {
+          console.warn('⚠️ API returned data array without pagination info. Total count may be incorrect.');
+          return {
+            products: response.data,
+            pagination: {
+              page: params?.page || 1,
+              limit: params?.limit || 20,
+              total: response.data.length,
+              totalPages: Math.ceil(response.data.length / (params?.limit || 20))
+            }
+          };
+        }
       } else if (response.items && Array.isArray(response.items)) {
         console.log('Response has items array, mapping to products');
+        // API response structure: {items: [...], total: X, page: Y, Limit: Z, pages: W}
         return {
           products: response.items,
-          pagination: response.pagination || {
-            page: params?.page || 1,
-            limit: params?.limit || 20,
-            total: response.items.length,
-            totalPages: Math.ceil(response.items.length / (params?.limit || 20))
+          pagination: {
+            page: response.page || params?.page || 1,
+            limit: response.Limit || response.limit || params?.limit || 20,
+            total: response.total || response.items.length,
+            totalPages: response.pages || Math.ceil((response.total || response.items.length) / (response.Limit || response.limit || params?.limit || 20))
           }
         };
       }

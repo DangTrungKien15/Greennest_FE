@@ -88,22 +88,36 @@ export default function AdminProducts() {
         if (productsResponse && typeof productsResponse === 'object') {
           if (productsResponse.products && Array.isArray(productsResponse.products)) {
             setProducts(productsResponse.products);
-            setPagination(productsResponse.pagination || {
-              page: pagination.page,
-              limit: pagination.limit,
-              total: productsResponse.products.length,
-              totalPages: Math.ceil(productsResponse.products.length / pagination.limit)
-            });
+            // Check if pagination info exists
+            if (productsResponse.pagination) {
+              console.log('✅ Using API pagination info:', productsResponse.pagination);
+              setPagination(productsResponse.pagination);
+            } else {
+              console.warn('⚠️ No pagination info from API. Products array length:', productsResponse.products.length);
+              console.warn('⚠️ This usually means API returned all products or incomplete pagination.');
+              // When no pagination info, we can't determine the actual total
+              // Keep the current pagination state unchanged
+              setPagination(prev => ({
+                ...prev,
+                total: productsResponse.products.length, // This might be incorrect if API didn't return all products
+                totalPages: Math.ceil(productsResponse.products.length / prev.limit)
+              }));
+            }
           } else if (productsResponse.data && Array.isArray(productsResponse.data)) {
             setProducts(productsResponse.data);
-            setPagination(productsResponse.pagination || {
-              page: pagination.page,
-              limit: pagination.limit,
-              total: productsResponse.data.length,
-              totalPages: Math.ceil(productsResponse.data.length / pagination.limit)
-            });
+            if (productsResponse.pagination) {
+              setPagination(productsResponse.pagination);
+            } else {
+              console.warn('⚠️ No pagination info from API');
+              setPagination(prev => ({
+                ...prev,
+                total: productsResponse.data.length,
+                totalPages: Math.ceil(productsResponse.data.length / prev.limit)
+              }));
+            }
           } else if (Array.isArray(productsResponse)) {
             setProducts(productsResponse);
+            console.warn('⚠️ API returned array directly, no pagination info');
             setPagination({
               page: pagination.page,
               limit: pagination.limit,
@@ -1186,9 +1200,9 @@ export default function AdminProducts() {
                   </div>
                   <div>
                     <span className="text-gray-500">Số lượng tồn kho hiện tại:</span>
-                    {/* <span className="ml-2 font-medium text-blue-600">{selectedProduct.stock}</span> */}
-                    <span className="ml-2 font-medium text-blue-600">{inventoryData.stock}</span>
-
+                    <span className="ml-2 font-medium text-blue-600">
+                      {inventoryData ? inventoryData.stock : (selectedProduct.stock || 0)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1262,7 +1276,7 @@ export default function AdminProducts() {
                         value={inventoryForm.quantity}
                         onChange={(e) => setInventoryForm(prev => ({ ...prev, quantity: e.target.value }))}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder={inventoryData.stock.toString()}
+                        placeholder={inventoryData?.stock?.toString() || '0'}
                         min="0"
                         required
                       />
