@@ -25,12 +25,12 @@ export default function AdminNavigation() {
       icon: Users,
       current: location.pathname === '/admin/users'
     },
-    {
-      name: 'Quản lý Vai trò',
-      href: '/admin/roles',
-      icon: Shield,
-      current: location.pathname === '/admin/roles'
-    },
+    // {
+    //   name: 'Quản lý Vai trò',
+    //   href: '/admin/roles',
+    //   icon: Shield,
+    //   current: location.pathname === '/admin/roles'
+    // },
     {
       name: 'Quản lý Danh mục',
       href: '/admin/categories',

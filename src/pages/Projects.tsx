@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, MapPin, Calendar, DollarSign, Tag } from 'lucide-react';
+import { Eye, MapPin, Calendar, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Project {
@@ -31,8 +31,8 @@ export default function Projects() {
       id: 2,
       title: "Villa sinh thái",
       location: "Quận 2, TP.HCM",
-      date: "Tháng 2, 2024",
-      priceRange: "20-50 triệu",
+      date: "Tháng 2, 2024",              
+      priceRange: "30-50 triệu",
       style: "Sinh thái",
       image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=400&fit=crop&crop=center",
       area: "100m²"
@@ -187,10 +187,6 @@ export default function Projects() {
                   <div className="flex items-center text-gray-600">
                     <Calendar className="w-4 h-4 mr-2" />
                     <span className="text-sm">{project.date}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    <span className="text-sm">{project.priceRange}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <Tag className="w-4 h-4 mr-2" />
