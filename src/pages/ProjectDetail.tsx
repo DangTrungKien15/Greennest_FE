@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, DollarSign, Tag, Home, TreePine } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Tag, Home, TreePine } from 'lucide-react';
 
 interface Project {
   id: number;
@@ -28,7 +28,7 @@ export default function ProjectDetail() {
       title: "Căn hộ hiện đại Landmark 81",
       location: "Quận 1, TP.HCM",
       date: "Tháng 3, 2024",
-      priceRange: "500-800 triệu",
+      priceRange: "15-20 triệu",
       style: "Hiện đại",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=center",
       area: "85m²",
@@ -53,7 +53,7 @@ export default function ProjectDetail() {
       title: "Villa sinh thái",
       location: "Quận 2, TP.HCM",
       date: "Tháng 2, 2024",
-      priceRange: "1-2 tỷ",
+      priceRange: "20-50 triệu",
       style: "Sinh thái",
       image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&crop=center",
       area: "200m²",
@@ -96,6 +96,81 @@ export default function ProjectDetail() {
         "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop&crop=center",
         "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&crop=center",
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"
+      ]
+    },
+    {
+      id: 4,
+      title: "Biệt thự cao cấp Thủ Đức",
+      location: "Quận Thủ Đức, TP.HCM",
+      date: "Tháng 12, 2023",
+      priceRange: "20-50 triệu",
+      style: "Hiện đại",
+      image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop&crop=center",
+      area: "150m²",
+      description: "Biệt thự cao cấp với thiết kế sang trọng và hiện đại, không gian rộng rãi, hệ thống tiện ích đầy đủ. Tích hợp công nghệ thông minh và cảnh quan xanh mát.",
+      features: [
+        "Thiết kế sang trọng",
+        "Nhà thông minh (Smart Home)",
+        "Hồ bơi riêng",
+        "Khu vực BBQ ngoài trời",
+        "Sân vườn rộng rãi",
+        "Hệ thống an ninh cao cấp"
+      ],
+      images: [
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=center"
+      ]
+    },
+    {
+      id: 5,
+      title: "Căn hộ sinh thái Quận 7",
+      location: "Quận 7, TP.HCM",
+      date: "Tháng 11, 2023",
+      priceRange: "20-50 triệu",
+      style: "Sinh thái",
+      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&crop=center",
+      area: "95m²",
+      description: "Căn hộ sinh thái với thiết kế xanh, sử dụng vật liệu tái chế và năng lượng sạch. Không gian sống trong lành, gần gũi với thiên nhiên.",
+      features: [
+        "Vật liệu tái chế",
+        "Năng lượng mặt trời",
+        "Vườn rau trên sân thượng",
+        "Hệ thống lọc không khí",
+        "Tái sử dụng nước mưa",
+        "Cảnh quan xanh"
+      ],
+      images: [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&crop=center"
+      ]
+    },
+    {
+      id: 6,
+      title: "Nhà vườn tối giản Củ Chi",
+      location: "Huyện Củ Chi, TP.HCM",
+      date: "Tháng 10, 2023",
+      priceRange: "20-50 triệu",
+      style: "Tối giản",
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center",
+      area: "150m²",
+      description: "Nhà vườn tối giản với không gian thoáng đãng, hòa hợp với thiên nhiên. Thiết kế đơn giản nhưng tiện nghi, lý tưởng cho cuộc sống yên bình.",
+      features: [
+        "Vườn rộng",
+        "Không gian mở",
+        "Tích hợp thiên nhiên",
+        "Thiết kế tối giản",
+        "Khu vực nghỉ ngơi",
+        "Hồ cá Koi"
+      ],
+      images: [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop&crop=center"
       ]
     }
   ];
@@ -237,13 +312,7 @@ export default function ProjectDetail() {
                   <span className="font-medium text-gray-900">{project.date}</span>
                 </div>
 
-                <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <DollarSign className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600">Ngân sách</span>
-                  </div>
-                  <span className="font-medium text-gray-900">{project.priceRange}</span>
-                </div>
+                
 
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                   <div className="flex items-center space-x-3">
@@ -273,9 +342,12 @@ export default function ProjectDetail() {
                 <button className="w-full bg-white text-green-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                   Gọi ngay: 0867976303
                 </button>
-                <button className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors">
+                <Link 
+                  to="/contact"
+                  className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors inline-block text-center"
+                >
                   Đặt lịch tư vấn
-                </button>
+                </Link>
               </div>
             </div>
 
